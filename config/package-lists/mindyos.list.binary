@@ -1,0 +1,12 @@
+# MindyOS Binary Package List
+# Packages for the live system (bootable ISO)
+
+# === Live System ===
+live-boot
+live-boot-initramfs-tools
+live-config
+live-config-systemd
+live-tools
+
+# === Boot Screens ===
+# Use default Debian theme

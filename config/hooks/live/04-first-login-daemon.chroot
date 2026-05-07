@@ -1,0 +1,70 @@
+#!/bin/bash
+set -e
+
+# MindyOS First Login Daemon
+# Runs once at first login to configure desktop settings
+
+# Mark that we've run (used to prevent repeated runs)
+MARKER_FILE="/home/live/.mindyos_configured"
+
+# Function to configure desktop
+configure_desktop() {
+    export DISPLAY=:0
+    export XDG_RUNTIME_DIR="/run/user/1000"
+    
+    # Wait for XFCE to be ready
+    for i in {1..30}; do
+        if xdpyinfo &>/dev/null; then
+            break
+        fi
+        sleep 1
+    done
+    
+    # Set desktop wallpaper
+    if command -v xfconf-query &>/dev/null; then
+        xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image -s /usr/share/images/mindyos/mindyos-wallpaper.jpg 2>/dev/null || true
+        
+        # Set dark theme for XFWM
+        xfconf-query -c xfwm4 -p /general/theme -s Greybird-dark 2>/dev/null || true
+        
+        # Set dark theme for GTK
+        xfconf-query -c xsettings -p /Net/ThemeName -s Greybird-dark 2>/dev/null || true
+        
+        # Set Papirus-Dark icons
+        xfconf-query -c xsettings -p /Net/IconThemeName -s Papirus-Dark 2>/dev/null || true
+        
+        # Set Roboto font
+        xfconf-query -c xsettings -p /Gtk/FontName -s "Roboto 11" 2>/dev/null || true
+        
+        # Set workspace name
+        xfconf-query -c xfce4-desktop -p /general/workspace_names -t string -s "Workspace 1" 2>/dev/null || true
+    fi
+    
+    # Set terminal configuration
+    if command -v xfce4-terminal &>/dev/null; then
+        # Set default font for terminal
+        xfconf-query -c xfce4-terminal -p /FontName -s "Roboto Mono 11" 2>/dev/null || true
+    fi
+    
+    # Create marker file
+    touch "$MARKER_FILE"
+    
+    echo "Desktop configuration complete!"
+}
+
+# Run only if marker doesn't exist
+if [ ! -f "$MARKER_FILE" ]; then
+    # Wait for desktop to start
+    sleep 5
+    
+    # Try to run as live user
+    if id live &>/dev/null; then
+        su - live -c "export DISPLAY=:0; $0 --configure" &
+        wait
+    else
+        "$0 --configure" &
+        wait
+    fi
+elif [ "$1" = "--configure" ]; then
+    configure_desktop
+fi

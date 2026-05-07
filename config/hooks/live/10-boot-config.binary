@@ -1,0 +1,81 @@
+#!/bin/bash
+set -e
+
+# MindyOS Boot Configuration
+# Configures boot screen and syslinux/isolinux
+
+echo "Configuring MindyOS boot screen..."
+
+# === Syslinux/ISOLINUX Boot Configuration ===
+mkdir -p /boot/isolinux
+
+# Create boot menu configuration
+cat > /boot/isolinux/isolinux.cfg <<'EOF'
+UI vesamenu.c32
+
+MENU TITLE MindyOS Live System
+MENU TITLE ------------------------------------------------
+MENU TITLE MindyOS - XFCE Desktop Environment
+MENU TITLE Version 1.0
+MENU BACKGROUND /usr/share/backgrounds/mindyos/menu.png
+
+MENU BEGIN Live Boot
+MENU LABEL Start MindyOS (Live)
+MENU DEFAULT
+KERNEL /live/vmlinuz
+APPEND initrd=/live/initrd.img boot=live components quiet splash
+
+MENU LABEL Start MindyOS (Safe Graphics)
+KERNEL /live/vmlinuz
+APPEND initrd=/live/initrd.img boot=live components a11y-font-size=16 splash
+
+MENU LABEL Memtest86+
+KERNEL /boot/memtest
+APPEND -
+MENU SEPARATOR
+MENU LABEL Install MindyOS
+KERNEL /install/vmlinuz
+APPEND initrd=/install/initrd.gz auto=true priority=critical quiet splash --
+MENU LABEL Graphical Install
+KERNEL /install/vmlinuz
+APPEND initrd=/install/initrd.gui gui=true auto=true priority=critical quiet splash --
+MENU END
+
+MENU BEGIN Advanced
+MENU LABEL ACPI Disable
+KERNEL /live/vmlinuz
+APPEND initrd=/live/initrd.img boot=live components acpi=off
+
+MENU LABEL No APIC
+KERNEL /live/vmlinuz
+APPEND initrd=/live/initrd.img boot=live components noapic
+
+MENU LABEL NO KMS
+KERNEL /live/vmlinuz
+APPEND initrd=/live/initrd.img boot=live components noeject
+
+MENU LABEL Expert Mode
+KERNEL /live/vmlinuz
+APPEND initrd=/live/initrd.img boot=live components expert
+MENU END
+
+MENU BEGIN Help
+MENU LABEL Keyboard Layouts
+KERNEL /live/vmlinuz
+APPEND initrd=/live/initrd.img boot=live components kbd=us,ru
+MENU END
+
+# Timeout
+TIMEOUT 100
+TIMEOUT !menu_default
+
+# Prompt
+PROMPT 0
+EOF
+
+# Copy default splash (debian-like text mode)
+cat > /boot/isolinux gfxboot.c32 <<'EOF'
+# Placeholder
+EOF
+
+echo "Boot configuration complete!"
