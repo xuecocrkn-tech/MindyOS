@@ -1,0 +1,133 @@
+#!/bin/bash
+set -e
+
+# MindyOS System Configuration
+# Configures system settings for the live image
+
+echo "Configuring MindyOS system..."
+
+# === Locale Configuration ===
+# Set up Russian locale with English keyboard
+cat > /etc/locale.gen <<'EOF'
+en_US.UTF-8 UTF-8
+ru_RU.UTF-8 UTF-8
+EOF
+
+# Generate locales
+locale-gen
+
+# Set default locale
+update-locale LANG=ru_RU.UTF-8
+
+# === Keyboard Configuration ===
+# Set up keyboard for Russian with English keyboard default
+cat > /etc/default/keyboard <<'EOF'
+XKBMODEL=pc105
+XKBLAYOUT=us,ru
+XKBVARIANT=,
+XKBOPTIONS=grp:ctrl_shift_toggle,terminate:ctrl_alt_bksp
+EOF
+
+# === Timezone ===
+ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
+
+# === hostname ===
+echo "mindyos" > /etc/hostname
+
+# === hosts ===
+cat >> /etc/hosts <<'EOF'
+127.0.0.1   localhost
+127.0.1.1   mindyos
+EOF
+
+# === Set up live user ===
+# live-build typically creates this, but ensure it exists
+if ! id live &>/dev/null; then
+    useradd -m -s /bin/bash live || true
+    echo "live:live" | chpasswd
+fi
+
+# Add live to sudo group
+usermod -aG sudo live 2>/dev/null || true
+
+# === LightDM Automatic Login ===
+mkdir -p /etc/lightdm
+cat > /etc/lightdm/lightdm.conf <<'EOF'
+[LightDM]
+# Run X servers as usual
+runxserver=true
+
+[Seat:*]
+# Automatic login
+autologin-user=live
+autologin-user-timeout=0
+# Session type
+type=remote
+remote-modules=lightdm-remote-session-freerdp
+
+# Guest login (disabled)
+greeter-hide-users=false
+
+# X server configuration
+xserver-command=X -core
+
+[LightDM]
+# Backup the original configuration
+backup=*
+EOF
+
+# === LightDM Greeter Configuration ===
+mkdir -p /etc/lightdm/lightdm-gtk-greeter.d
+cat > /etc/lightdm/lightdm-gtk-greeter.conf <<'EOF'
+[greeter]
+# Theme and icon
+theme-name=Greybird-dark
+icon-theme-name=Papirus-Dark
+# Font
+font-name=Roboto 11
+# Background
+background=/usr/share/images/mindyos/mindyos-wallpaper.jpg
+# User list
+hide-users=false
+show-manual-login=true
+show-remote-logins=false
+EOF
+
+# === GTK Settings ===
+mkdir -p /etc/skel/.config/xfce4/xfconf
+cat > /etc/skel/.config/xfce4/xfce4-perchannel.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="theme" type="string" value="Greybird-dark"/>
+  <property name="titlefont" type="string" value="Roboto Medium 11"/>
+  <property name="title_alignment" type="string" value="center"/>
+</channel>
+<channel name="xsettings" version="1.0">
+  <property name="Net/ThemeName" type="string" value="Greybird-dark"/>
+  <property name="Net/IconThemeName" type="string" value="Papirus-Dark"/>
+  <property name="Gtk/FontName" type="string" value="Roboto 11"/>
+  <property name="Xft/Antialias" type="int" value="1"/>
+  <property name="Xft/Hinting" type="int" value="1"/>
+  <property name="Xft/RGBA" type="string" value="rgb"/>
+  <property name="Xft/Lcdfilter" type="string" value="lcdDefault"/>
+</channel>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="workspace0/image-path" type="string" value="/usr/share/images/mindyos/mindyos-wallpaper.jpg"/>
+  <property name="workspace0/image-style" type="int" value="6"/>
+  <property name="workspace0/backdrop-cycle" type="bool" value="false"/>
+</channel>
+<channel name="xfce4-panel" version="1.0">
+  <property name="panels" type="string" value="panel-1"/>
+  <property name="panel-1/position" type="string" value="p=8;x=0;y=0"/>
+  <property name="panel-1/size" type="int" value="26"/>
+  <property name="panel-1/padding" type="int" value="0"/>
+  <property name="panel-1/margin" type="int" value="0"/>
+</channel>
+<channel name="xfce4-session" version="1.0">
+  <property name="session/StartXserver" type="bool" value="true"/>
+  <property name="session/UseGdbus" type="bool" value="true"/>
+</channel>
+EOF
+
+echo "System configuration complete!"

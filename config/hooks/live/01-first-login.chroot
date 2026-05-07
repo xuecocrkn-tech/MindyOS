@@ -1,0 +1,63 @@
+#!/bin/bash
+set -e
+
+# MindyOS XFCE First Login Setup (System Service)
+# Runs at first login to configure desktop
+
+# Create systemd service for first-login setup
+cat > /lib/systemd/system/mindyos-first-login.service <<'EOF'
+[Unit]
+Description=MindyOS First Login Setup
+After=graphical.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/mindyos-first-login.sh
+RemainAfterExit=yes
+User=live
+
+[Install]
+WantedBy=graphical.target
+EOF
+
+# Create first-login script
+cat > /usr/local/bin/mindyos-first-login.sh <<'EOF'
+#!/bin/bash
+set -e
+
+# Wait longer for desktop to be ready
+sleep 10
+
+# Get display
+export DISPLAY=:0
+export XDG_RUNTIME_DIR="/run/user/1000"
+
+# Function to run with display
+run_with_display() {
+    # Use su to run as live user
+    su - live -c 'export DISPLAY=:0; export XDG_RUNTIME_DIR="/run/user/1000"; 
+        # Set desktop wallpaper
+        xfconfquery -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image -s /usr/share/images/mindyos/mindyos-wallpaper.jpg 2>/dev/null || true
+        
+        # Set dark theme
+        xfconfquery -c xfwm4 -p /general/theme -s Greybird-dark 2>/dev/null || true
+        xfconfquery -c xsettings -p /Net/ThemeName -s Greybird-dark 2>/dev/null || true
+        
+        # Set icon theme
+        xfconfquery -c xsettings -p /Net/IconThemeName -s Papirus-Dark 2>/dev/null || true
+        
+        # Set font
+        xfconfquery -c xsettings -p /Gtk/FontName -s "Roboto 11" 2>/dev/null || true
+        
+        # Set terminal font
+        xfconfquery -c xfce4-terminal -p /FontName -s "Roboto Mono 11" 2>/dev/null || true
+        
+        echo "First login setup complete!"
+    ' 2>/dev/null || true
+}
+
+# Disable this service after running
+systemctl disable mindyos-first-login.service 2>/dev/null || true
+
+echo "First login service installed."

@@ -1,0 +1,125 @@
+#!/bin/bash
+set -e
+
+# MindyOS Autostart Configuration
+# Configures applications that start automatically with XFCE
+
+echo "Configuring MindyOS autostart applications..."
+
+# Create autostart directory for live user
+mkdir -p /home/live/.config/autostart
+mkdir -p /etc/xdg/autostart
+
+# === Desktop First-Run Configuration ===
+cat > /home/live/.config/autostart/mindyos-first-login.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=MindyOS First Login Setup
+Comment=Initial desktop configuration
+Exec=/usr/local/bin/mindyos-first-login-daemon.sh
+Icon=system-run
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
+EOF
+
+# === Network Applet ===
+cat > /home/live/.config/autostart/nm-applet.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Network Manager
+Comment=Network connection manager
+Exec=/usr/bin/nm-applet
+Icon=network-workgroup
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+EOF
+
+# === Volume Control ===
+cat > /home/live/.config/autostart/pavucontrol.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Volume Control
+Comment=PulseAudio Volume Control
+Exec=/usr/bin/pavucontrol
+Icon=audio-x-generic
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+EOF
+
+# === Bluetooth Applet (optional) ===
+cat > /home/live/.config/autostart/blueman.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Bluetooth Manager
+Comment=Bluetooth connection manager
+Exec=/usr/bin/blueman-manager
+Icon=blueman
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+EOF
+
+# === Power Manager ===
+cat > /home/live/.config/autostart/xfce4-power-manager.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Power Manager
+Comment=Power management for laptop battery
+Exec=/usr/bin/xfce4-power-manager
+Icon=battery
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+EOF
+
+# === Screensaver ===
+cat > /home/live/.config/autostart/xscreensaver.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Screensaver
+Comment=Lock screen after inactivity
+Exec=/usr/bin/xscreensaver -nosplash
+Icon=system-lock-screen
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+EOF
+
+# === Setting Synchron Daemon ===
+cat > /home/live/.config/autostart/zeitgeist-daemon.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Geoclue service
+Comment=Location service
+Exec=/usr/lib/x86_64-linux-gnu/geoclue-2.0/demos/agent
+Icon=preferences-system-time
+StartupNotify=true
+X-GNOME-Autostart-enabled=false
+EOF
+
+# === PolicyKit Authentication Agent ===
+cat > /etc/xdg/autostart/polkit-gnome-authentication-agent-1.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=PolicyKit Authentication Agent
+Comment=PolicyKit authentication agent for XFCE
+Exec=/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+Icon=redhat-authentication
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+EOF
+
+# === Update Notifier (optional) ===
+cat > /home/live/.config/autostart/gnome-software-daemon.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Software Update Notifier
+Comment=Notify when software updates are available
+Exec=/usr/bin/gnome-software --offline
+Icon=system-software-installer
+StartupNotify=true
+X-GNOME-Autostart-enabled=false
+EOF
+
+# Make scripts executable
+chmod +x /home/live/.config/autostart/*.desktop 2>/dev/null || true
+chmod +x /etc/xdg/autostart/*.desktop 2>/dev/null || true
+
+echo "Autostart configuration complete!"

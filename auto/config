@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+# MindyOS live-build configuration
+# Based on Debian Stable
+
+lb config no \
+	--architectures amd64 \
+	--bootloader syslinux \
+	--distribution stable \
+	--linux-flavours amd64 \
+	--iso-volume "MindyOS" \
+	--image-name "mindyos" \
+	--source false \
+	--apt apt \
+	--apt-indices true \
+	--apt-recommends true \
+	--apt-secured true \
+	--binary-images hybrid \
+	--hybrid-options "--eltivefs-uuids" \
+	--bootloaders syslinux \
+	--checksums md5 \
+	--debian-installer live \
+	--debian-installer-gui true \
+	--installer-package live-installer \
+	--firmware false \
+	--memtest none \
+	--tasks-tasks "standard,xfce" \
+	--iso-publisher "MindyOS Team" \
+	--iso-preparer "MindyOS" \
+	--iso-volume "MindyOS" \
+	--linux-packages linux-image \
+	--binary-format iso-hybrid \
+	--archive-mirrors true \
+	--gzip-compression true

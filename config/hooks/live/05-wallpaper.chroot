@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+# MindyOS Wallpaper Setup
+# Creates MindyOS default wallpaper
+
+# Create directory for wallpapers
+mkdir -p /usr/share/images/mindyos
+
+# Create a simple but elegant MindyOS wallpaper using ImageMagick
+# This creates a dark gradient background with the MindyOS logo
+
+# Generate wallpaper
+convert -size 1920x1080 \
+    gradient:#1a1a2e-#16213e \
+    -gravity center \
+    -fill "#4a9eff" \
+    -pointsize 72 -font Roboto-Medium \
+    label:"MindyOS" \
+    -composite \
+    /usr/share/images/mindyos/mindyos-wallpaper.jpg || true
+
+# Alternative: Create simple wallpaper if ImageMagick not available
+# Use simple solid color wallpaper
+if [ ! -f /usr/share/images/mindyos/mindyos-wallpaper.jpg ]; then
+    # Create 1x1 pixel placeholder - will be replaced by boot splash
+    convert -size 1920x1080 gradient:#1a1a2e-#16213e \
+        /usr/share/images/mindyos/mindyos-wallpaper.jpg || true
+fi
+
+# Set permissions
+chmod 644 /usr/share/images/mindyos/mindyos-wallpaper.jpg
+chown root:root /usr/share/images/mindyos/mindyos-wallpaper.jpg
+
+echo "Wallpaper configuration complete!"

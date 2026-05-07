@@ -1,0 +1,175 @@
+# MindyOS Package List
+# Minimal stable system + XFCE + lightweight applications
+# Architecture: amd64
+
+# === Core System ===
+# Minimal Debian base (live-build tasks include standard)
+linux-image-amd64
+live-boot
+live-boot-initramfs-tools
+live-config
+live-config-systemd
+live-tools
+fake-hwclock
+
+# === XFCE Desktop Environment ===
+# XFCE 4.18 (from Debian Stable)
+xfce4
+xfce4-goodies
+# Panel plugins
+xfce4-panel
+xfce4-session
+xfce4-settings
+xfce4-terminal
+thunar
+thunar-archive-plugin
+thunar-volman
+mousepad
+xfwm4
+xfconf
+libxfce4ui
+libxfce4util
+exo-utils
+garcon
+
+# === LightDM and Display Manager ===
+lightdm
+lightdm-gtk-greeter
+gtk2-engines
+gtk3-engines
+
+# === Lightweight Applications ===
+# File Manager: Thunar (included above)
+# Terminal: XFCE Terminal (included above)
+# Text Editor: Mousepad (included above)
+
+# Browser: Firefox ESR (lightweight enough) or Links
+firefox-esr
+# Or use chromium for more modern browser
+# chromium
+
+# === Utilities ===
+# Archive manager
+file-roller
+xarchiver
+
+# Image viewer
+ristretto
+
+# Media player
+ parole
+
+# Calculator
+gnome-calculator
+
+# System monitor
+xfce4-taskmanager
+gnome-system-monitor
+
+# === Fonts ===
+fontconfig
+fonts-roboto
+fonts-dejavu
+fonts-liberation
+fonts-noto
+fonts-noto-cjk
+
+# === Icons and Themes ===
+# Greybird dark theme
+greybird-gtk-theme
+# Papirus icons
+papirus-icon-theme
+
+# === Desktop Customization ===
+# Wallpapers
+desktop-base
+# Additional wallpapers
+xfce4-terminal
+hddtemp
+lm-sensors
+# ACPI support
+acpi
+# PolicyKit
+policykit-1
+policykit-1-gnome
+# Gvfs for file mounting
+gvfs
+gvfs-backends
+gvfs-fuse
+# NTFS support
+ntfs-3g
+# User mount tool
+pmount
+# UDisks2
+udisks2
+# PolicyKit agent for XFCE
+polkit-gnome
+
+# === Localization ===
+# Russian language support
+locales
+locales-all
+# Keyboard configuration
+keyboard-configuration
+console-setup
+# Input method
+ibus
+ibus-libpinyin
+
+# === Network ===
+network-manager
+network-manager-gnome
+network-manager-openvpn
+openvpn
+openssh-client
+openssh-server
+
+# === X11 ===
+x11-apps
+x11-utils
+x11-xserver-utils
+xserver-xorg
+xserver-xorg-core
+xserver-xorg-input-all
+xserver-xorg-video-all
+xserver-xorg-video-fbdev
+xserver-xorg-video-qxl
+xserver-xorg-video-vmware
+
+# === Audio ===
+pulseaudio
+pulseaudio-utils
+pavucontrol
+xfce4-pulseaudio-plugin
+volumeicon-alsa
+
+# === Printing ===
+system-config-printer
+cups
+cups-client
+cups-common
+cups-filters
+cups-ppdc
+
+# === Java Runtime ===
+default-jre
+openjdk-17-jre
+
+# === Documentation ===
+hyphen-ru
+myspell-ru
+hunspell-ru
+
+# === Development Tools ===
+# Terminal editor
+vim
+nano
+# File comparison
+meld
+# Version control
+git
+# Build tools
+build-essential
+
+# === Cleanup (avoid these in final image) ===
+# None - keep system clean
